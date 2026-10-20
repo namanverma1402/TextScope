@@ -1,4 +1,4 @@
-# TextScope — Text Similarity & AI Writing Analysis
+# TextScope - Text Similarity & AI Writing Analysis
 
 A local Flask application with two separate tools:
 
