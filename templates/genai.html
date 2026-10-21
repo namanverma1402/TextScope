@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Summarize and compare documents with Gemini-powered generative AI.">
+  <title>TextScope — GenAI Document Lab</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .genai-wrap{max-width:920px;margin:0 auto}.genai-intro{margin:28px 0 22px}.genai-intro h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.08;margin:8px 0 12px}.genai-intro p{max-width:700px;line-height:1.7;color:var(--muted,#687386)}
+    .genai-form{display:grid;gap:18px}.genai-form .panel{min-width:0}.genai-form textarea{width:100%;min-height:190px;box-sizing:border-box}.genai-form textarea.secondary{min-height:145px}.genai-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}.genai-controls select{padding:12px;border:1px solid #d8deea;border-radius:10px;background:white;font:inherit}.genai-result{margin-top:28px;padding:clamp(20px,4vw,34px);border:1px solid #dce4ef;border-radius:18px;background:white;box-shadow:0 12px 40px #15243b0b}.genai-result h2{margin-top:0}.genai-output{white-space:pre-wrap;line-height:1.75;overflow-wrap:anywhere}.genai-notice{padding:13px 16px;border-radius:10px;background:#f0f6ff;color:#344a69;font-size:.92rem;line-height:1.6}.genai-alert{padding:14px 16px;border-radius:10px;margin:18px 0;background:#fff1f0;color:#8c2922}.genai-alert.warning{background:#fff8e6;color:#795b15}.genai-nav{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.genai-nav a{display:inline-block;padding:9px 13px;border:1px solid #dce4ef;border-radius:999px;text-decoration:none;color:inherit}.genai-nav a.active{background:#172b4d;color:white;border-color:#172b4d}.genai-small{font-size:.88rem;color:var(--muted,#687386);line-height:1.6}
+  </style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">TS</span>TextScope</a><span class="local-badge">● GenAI document tools</span></header>
+<main class="container genai-wrap">
+  <section class="genai-intro"><div class="eyebrow">GEMINI · DOCUMENT INTELLIGENCE</div><h1>Read less. <span>Understand more.</span></h1><p>Generate a structured summary or compare two documents for shared ideas and meaningful differences. Source files are processed by the server and sent to the configured AI provider for analysis.</p></section>
+  <nav class="genai-nav" aria-label="TextScope tools"><a href="/?mode=similarity">Text similarity</a><a href="/?mode=ai">Experimental AI-writing analysis</a><a class="active" href="/genai">GenAI document lab</a></nav>
+  <div class="genai-notice"><strong>Setup:</strong> This feature requires a Gemini API key in the server environment variable <code>GEMINI_API_KEY</code>. Never paste the key into this page or commit it to GitHub.</div>
+  {% if error %}<div class="genai-alert" role="alert">{{ error }}</div>{% endif %}
+  {% if warnings %}<div class="genai-alert warning"><strong>File notes</strong><ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul></div>{% endif %}
+  <form class="genai-form" action="/genai" method="post" enctype="multipart/form-data">
+    <section class="panel"><div class="panel-heading"><div><span class="step">01</span><h2>Choose an analysis</h2></div></div><label for="task">Task</label><select id="task" name="task"><option value="summary" {{ 'selected' if task == 'summary' else '' }}>Summarize one document</option><option value="compare" {{ 'selected' if task == 'compare' else '' }}>Compare two documents</option></select></section>
+    <section class="panel"><div class="panel-heading"><div><span class="step">02</span><h2>Document A</h2></div><span class="muted">Required</span></div><label for="document_text">Paste document text</label><textarea id="document_text" name="document_text" maxlength="200000" placeholder="Paste notes, a report, an article, or extracted document text…">{{ document_text|default('') }}</textarea><label for="document_file">Or upload a TXT, PDF, or DOCX file</label><input id="document_file" name="document_file" type="file" accept=".txt,.pdf,.docx"><p class="genai-small">If both text and a file are supplied, pasted text takes priority. Scanned PDFs may need OCR before upload.</p></section>
+    <section class="panel" id="second-document" {{ 'hidden' if task != 'compare' else '' }}><div class="panel-heading"><div><span class="step">03</span><h2>Document B</h2></div><span class="muted">Comparison only</span></div><label for="comparison_text">Paste the second document</label><textarea class="secondary" id="comparison_text" name="comparison_text" maxlength="200000" placeholder="Paste the second document here…">{{ comparison_text|default('') }}</textarea><label for="comparison_file">Or upload a second file</label><input id="comparison_file" name="comparison_file" type="file" accept=".txt,.pdf,.docx"></section>
+    <div class="genai-controls"><p class="genai-small">Input limit: 80,000 characters per document sent to the model.</p><button class="primary-button" type="submit">Run analysis <span>→</span></button></div>
+  </form>
+  {% if result %}<section class="genai-result" aria-live="polite"><div class="eyebrow">ANALYSIS COMPLETE</div><h2>{{ 'Document comparison' if task == 'compare' else 'Document summary' }}</h2><div class="genai-output">{{ result }}</div><p class="genai-small">AI-generated analysis can omit details or make mistakes. Verify important claims against the original document.</p></section>{% endif %}
+  <footer><span>TextScope · GenAI Document Lab</span><span>Python · Flask · Gemini API</span></footer>
+</main>
+<script>
+const task=document.getElementById('task'), second=document.getElementById('second-document');
+function toggleSecond(){second.hidden=task.value!=='compare';}
+task.addEventListener('change',toggleSecond);toggleSecond();
+</script>
+</body></html>
