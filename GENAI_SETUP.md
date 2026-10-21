@@ -19,7 +19,7 @@ Open the TextScope web service in Render, go to Environment, and add:
 - Value: your private Gemini API key
 
 Optional:
-- `GEMINI_MODEL` = `gemini-2.5-flash`
+- `GEMINI_MODEL` = `gemini-3.8-flash`
 
 Save changes and redeploy/restart the service. Do not put secrets in source files or commit a real `.env` file.
 
