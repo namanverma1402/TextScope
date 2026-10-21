@@ -2,6 +2,7 @@ from pathlib import Path
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from similarity import compare_documents, extract_text_from_file
+from genai_tools import generate_document_insight
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 12 * 1024 * 1024
@@ -19,9 +20,51 @@ def render_page(**kwargs):
 @app.get('/')
 def index():
     mode = request.args.get('mode', 'similarity')
-    if mode not in {'similarity', 'ai'}:
+    if mode not in {'similarity', 'ai', 'genai'}:
         mode = 'similarity'
     return render_page(mode=mode)
+
+
+@app.route('/genai', methods=['GET', 'POST'])
+def genai():
+    if request.method == 'GET':
+        return render_template('genai.html', result=None, error=None, task='summary', warnings=[])
+    task = request.form.get('task', 'summary')
+    if task not in {'summary', 'compare'}:
+        task = 'summary'
+    primary = request.form.get('document_text', '').strip()
+    secondary = request.form.get('comparison_text', '').strip()
+    warnings = []
+    for field_name, target in [('document_file', 'primary'), ('comparison_file', 'secondary')]:
+        uploaded = request.files.get(field_name)
+        if not uploaded or not uploaded.filename:
+            continue
+        suffix = Path(secure_filename(uploaded.filename)).suffix.lower()
+        if suffix not in ALLOWED:
+            warnings.append(f'{uploaded.filename}: unsupported file type. Use TXT, PDF or DOCX.')
+            continue
+        try:
+            extracted = extract_text_from_file(uploaded, suffix).strip()
+            if target == 'primary' and not primary:
+                primary = extracted
+            elif target == 'secondary' and not secondary:
+                secondary = extracted
+        except Exception:
+            warnings.append(f'{uploaded.filename}: unable to read this file.')
+    if not primary:
+        return render_template('genai.html', result=None, error='Paste or upload a document to analyze.', task=task, warnings=warnings), 400
+    if task == 'compare' and not secondary:
+        return render_template('genai.html', result=None, error='For comparison, add a second document.', task=task, document_text=primary, warnings=warnings), 400
+    if len(primary) > MAX_CHARS or len(secondary) > MAX_CHARS:
+        return render_template('genai.html', result=None, error='Each document is limited to 200,000 characters.', task=task, warnings=warnings), 400
+    try:
+        result = generate_document_insight(task, primary, secondary)
+        return render_template('genai.html', result=result, error=None, task=task, document_text=primary, comparison_text=secondary, warnings=warnings)
+    except ValueError as exc:
+        return render_template('genai.html', result=None, error=str(exc), task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 400
+    except Exception:
+        app.logger.exception('GenAI document analysis failed')
+        return render_template('genai.html', result=None, error='GenAI request failed. Check the API key, quota, and server logs, then try again.', task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 502
 
 
 @app.post('/compare')
