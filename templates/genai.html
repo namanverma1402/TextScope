@@ -15,7 +15,6 @@
 <main class="container genai-wrap">
   <section class="genai-intro"><div class="eyebrow">GEMINI · DOCUMENT INTELLIGENCE</div><h1>Read less. <span>Understand more.</span></h1><p>Generate a structured summary or compare two documents for shared ideas and meaningful differences. Source files are processed by the server and sent to the configured AI provider for analysis.</p></section>
   <nav class="genai-nav" aria-label="TextScope tools"><a href="/?mode=similarity">Text similarity</a><a href="/?mode=ai">Experimental AI-writing analysis</a><a class="active" href="/genai">GenAI document lab</a></nav>
-  <div class="genai-notice"><strong>Setup:</strong> This feature requires a Gemini API key in the server environment variable <code>GEMINI_API_KEY</code>. Never paste the key into this page or commit it to GitHub.</div>
   {% if error %}<div class="genai-alert" role="alert">{{ error }}</div>{% endif %}
   {% if warnings %}<div class="genai-alert warning"><strong>File notes</strong><ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul></div>{% endif %}
   <form class="genai-form" action="/genai" method="post" enctype="multipart/form-data">
