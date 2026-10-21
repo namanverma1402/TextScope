@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
-<header class="topbar"><a class="brand" href="/"><span class="brand-mark">D<span>T</span></span><span>document<span class="brand-dot">&amp;</span>text</span></a><div class="top-right"><span class="status-dot"></span><span>Workspace online</span></div></header>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">T<span>S</span></span><span>textscope<span class="brand-dot">.</span></span></a><div class="top-right"><span class="status-dot"></span><span>Workspace online</span></div></header>
 <main class="container">
   <section class="hero"><div class="eyebrow"><span class="sparkle">✳</span> YOUR TEXT, WITH MORE CLARITY</div><h1>Make sense of<br><span>what matters.</span></h1><p>Compare writing against source material or turn long documents into clear, useful insights — all in one focused workspace.</p><div class="hero-meta"><span><i>✦</i> NLP-powered similarity</span><span><i>↗</i> Gemini document insights</span></div></section>
   <nav class="mode-tabs" aria-label="Workspace tools">
@@ -35,7 +35,7 @@
   {% if results %}<section class="results-section" aria-live="polite"><div class="output-heading"><div><div class="eyebrow">RESULTS</div><h2>Reference comparison</h2></div><span class="mini-tag">{{ results|length }} SOURCE{{ '' if results|length == 1 else 'S' }}</span></div><div class="results-list">{% for result in results %}<article class="result-card"><div class="result-main"><div class="file-symbol">DOC</div><div class="result-name"><h3>{{ result.name }}</h3><p>{{ result.reference_words }} reference words · {{ result.query_words }} query words</p></div></div><div class="score-block"><div class="score-number">{{ '%.2f'|format(result.combined_score) }}<small>%</small></div><div class="score-label">Combined similarity</div><div class="score-track"><span style="width: {{ result.combined_score }}%"></span></div></div><div class="score-details"><div><span>Word / bigram</span><strong>{{ '%.2f'|format(result.word_score) }}%</strong></div><div><span>Character n-gram</span><strong>{{ '%.2f'|format(result.phrase_score) }}%</strong></div></div></article>{% endfor %}</div><p class="disclaimer">Scores measure overlap in word and character patterns. They do not prove plagiarism or establish authorship.</p></section>{% endif %}
   {% endif %}
   <section class="bottom-note"><div class="bottom-symbol">✳</div><div><strong>Built for clarity, not noise.</strong><p>Text similarity runs locally on the app server. GenAI document insights use your configured Gemini API.</p></div></section>
-  <footer><span>DOCUMENT &amp; TEXT <span class="brand-dot">/</span> ANALYZER</span><span>Python · Flask · scikit-learn · Gemini</span></footer>
+  <footer><span>TEXTSCOPE <span class="brand-dot">/</span> DOCUMENT WORKSPACE</span><span>Python · Flask · scikit-learn · Gemini</span></footer>
 </main>
 <script>
 const q=document.getElementById('query'), c=document.getElementById('counter');
