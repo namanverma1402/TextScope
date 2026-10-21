@@ -1,4 +1,0 @@
-# Optional dependencies for the experimental AI-text detection tab.
-# PyTorch can be a large download; install this only if you want AI detection.
-transformers>=4.40,<5.0
-torch>=2.2
