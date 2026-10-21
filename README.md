@@ -1,9 +1,11 @@
 # TextScope - Text Similarity & AI Writing Analysis
 
-A local Flask application with two separate tools:
+A Flask application with three separate tools:
 
 1. **Text similarity:** Compare text against pasted reference material or uploaded TXT, PDF, and DOCX files using TF-IDF word/bigram and character n-gram cosine similarity.
 2. **Experimental AI-writing analysis:** An optional Hugging Face text classifier that estimates whether writing resembles its learned generated-text examples. It is an experimental signal, not a dependable AI detector.
+
+3. **GenAI document lab:** Gemini-powered document summaries and two-document comparisons. Requires a server-side `GEMINI_API_KEY`; see [GENAI_SETUP.md](GENAI_SETUP.md).
 
 ## Run the core app on Windows
 1. Install Python 3.10+ and enable **Add Python to PATH**.

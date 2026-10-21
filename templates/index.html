@@ -10,7 +10,7 @@
 <header class="topbar"><a class="brand" href="/"><span class="brand-mark">TS</span>TextScope</a><span class="local-badge">● Local processing</span></header>
 <main class="container">
   <section class="hero"><div class="eyebrow">PYTHON · FLASK · NLP</div><h1>Understand your text.<br><span>Beyond the surface.</span></h1><p>Compare documents for textual overlap or explore an experimental AI-writing detector. Each tool answers a different question.</p></section>
-  <nav class="mode-tabs" aria-label="Analysis mode"><a class="mode-tab {{ 'active' if mode == 'similarity' else '' }}" href="/?mode=similarity"><strong>01</strong><span>Text similarity<small>Compare against references</small></span></a><a class="mode-tab {{ 'active' if mode == 'ai' else '' }}" href="/?mode=ai"><strong>02</strong><span>AI writing analysis<small>Experimental classifier</small></span></a></nav>
+  <nav class="mode-tabs" aria-label="Analysis mode"><a class="mode-tab {{ 'active' if mode == 'similarity' else '' }}" href="/?mode=similarity"><strong>01</strong><span>Text similarity<small>Compare against references</small></span></a><a class="mode-tab {{ 'active' if mode == 'ai' else '' }}" href="/?mode=ai"><strong>02</strong><span>AI writing analysis<small>Experimental classifier</small></span></a><a class="mode-tab" href="/genai"><strong>03</strong><span>GenAI document lab<small>Summarize & compare docs</small></span></a></nav>
   {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
   {% if warnings %}<div class="alert warning"><strong>Some files need attention</strong><ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul></div>{% endif %}
 
