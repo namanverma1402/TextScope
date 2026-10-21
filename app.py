@@ -12,7 +12,8 @@ MAX_CHARS = 200_000
 
 def render_page(**kwargs):
     defaults = dict(mode='similarity', results=None, ai_result=None, error=None,
-                    query='', reference_text='', warnings=[])
+                    query='', reference_text='', warnings=[], result=None, task='summary',
+                    document_text='', comparison_text='')
     defaults.update(kwargs)
     return render_template('index.html', **defaults)
 
@@ -28,7 +29,7 @@ def index():
 @app.route('/genai', methods=['GET', 'POST'])
 def genai():
     if request.method == 'GET':
-        return render_template('genai.html', result=None, error=None, task='summary', warnings=[])
+        return render_page(mode='genai', result=None, error=None, task='summary', warnings=[])
     task = request.form.get('task', 'summary')
     if task not in {'summary', 'compare'}:
         task = 'summary'
@@ -52,19 +53,19 @@ def genai():
         except Exception:
             warnings.append(f'{uploaded.filename}: unable to read this file.')
     if not primary:
-        return render_template('genai.html', result=None, error='Paste or upload a document to analyze.', task=task, warnings=warnings), 400
+        return render_page(mode='genai', result=None, error='Paste or upload a document to analyze.', task=task, warnings=warnings, document_text=primary, comparison_text=secondary), 400
     if task == 'compare' and not secondary:
-        return render_template('genai.html', result=None, error='For comparison, add a second document.', task=task, document_text=primary, warnings=warnings), 400
+        return render_page(mode='genai', result=None, error='For comparison, add a second document.', task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 400
     if len(primary) > MAX_CHARS or len(secondary) > MAX_CHARS:
-        return render_template('genai.html', result=None, error='Each document is limited to 200,000 characters.', task=task, warnings=warnings), 400
+        return render_page(mode='genai', result=None, error='Each document is limited to 200,000 characters.', task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 400
     try:
         result = generate_document_insight(task, primary, secondary)
-        return render_template('genai.html', result=result, error=None, task=task, document_text=primary, comparison_text=secondary, warnings=warnings)
+        return render_page(mode='genai', result=result, error=None, task=task, document_text=primary, comparison_text=secondary, warnings=warnings)
     except ValueError as exc:
-        return render_template('genai.html', result=None, error=str(exc), task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 400
+        return render_page(mode='genai', result=None, error=str(exc), task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 400
     except Exception:
         app.logger.exception('GenAI document analysis failed')
-        return render_template('genai.html', result=None, error='GenAI request failed. Check the API key, quota, and server logs, then try again.', task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 502
+        return render_page(mode='genai', result=None, error='GenAI request failed. Check the API key, quota, and server logs, then try again.', task=task, document_text=primary, comparison_text=secondary, warnings=warnings), 502
 
 
 @app.post('/compare')
