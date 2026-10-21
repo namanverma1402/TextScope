@@ -11,8 +11,8 @@ MAX_CHARS = 200_000
 
 
 def render_page(**kwargs):
-    defaults = dict(mode='similarity', results=None, ai_result=None, error=None,
-                    query='', reference_text='', warnings=[], result=None, task='summary',
+    defaults = dict(mode='similarity', results=None, error=None, query='',
+                    reference_text='', warnings=[], result=None, task='summary',
                     document_text='', comparison_text='')
     defaults.update(kwargs)
     return render_template('index.html', **defaults)
@@ -21,7 +21,7 @@ def render_page(**kwargs):
 @app.get('/')
 def index():
     mode = request.args.get('mode', 'similarity')
-    if mode not in {'similarity', 'ai', 'genai'}:
+    if mode not in {'similarity', 'genai'}:
         mode = 'similarity'
     return render_page(mode=mode)
 
@@ -104,24 +104,10 @@ def compare():
     return render_page(results=results, query=query, reference_text=ref_text, warnings=warnings)
 
 
-@app.post('/analyze-ai')
-def analyze_ai():
-    query = request.form.get('query', '').strip()
-    try:
-        from ai_detector import analyze_ai_text
-        ai_result = analyze_ai_text(query)
-        return render_page(mode='ai', ai_result=ai_result, query=query)
-    except (ValueError, RuntimeError) as exc:
-        return render_page(mode='ai', error=str(exc), query=query), 400
-    except Exception:
-        return render_page(mode='ai', error='AI analysis failed unexpectedly. Check the terminal for details.', query=query), 500
-
-
 @app.errorhandler(413)
 def too_large(_error):
     return render_page(error='Upload too large. Total request limit is 12 MB.'), 413
 
 
 if __name__ == '__main__':
-    # Local development only; do not expose Flask debug server publicly.
     app.run(debug=True)
