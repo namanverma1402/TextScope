@@ -43,7 +43,7 @@ def generate_document_insight(task, primary_text, secondary_text=""):
 
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+        model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
         contents=prompt,
         config={"temperature": 0.2, "max_output_tokens": 1800},
     )
